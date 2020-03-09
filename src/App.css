@@ -1,0 +1,15 @@
+/* Setting up styles for the main component */
+
+.App {
+  text-align: center;
+}
+
+.App-body {
+  background-color: #2e89dd;
+  color: white;
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  font-size: calc(10px + 2vmin);
+  padding-top: 10;
+}
