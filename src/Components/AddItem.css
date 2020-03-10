@@ -1,0 +1,11 @@
+.item_container{
+  width: 60%;
+  align-self: center;
+  background-color: red;
+  border-style: hidden;
+  border-radius: 15px;
+  padding:25px;
+  margin-top: 25;
+  text-align: center;
+  box-shadow: 0 8px 6px -6px black;
+}

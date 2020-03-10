@@ -1,63 +1,112 @@
-import React from 'react';
-import './ToDo.css'
+// R Haddlesey
 
-class ToDo extends React.Component {
+import React, { Component } from "react";
+import uuid from "uuid";
+import "./ToDo.css";
+
+class ToDo extends Component {
   constructor(props) {
-  super (props)
+    super(props);
 
-  // set up empty list to start
-  this.state={
-    todos:[]
+    this.input = React.createRef();
+    this.state = {
+      todos: [
+        { name: "Eggs", checked: false },
+        { name: "Bread", checked: false },
+        { name: "Milk", checked: false }
+      ]
+    };
   }
-}
+
+  addTask = () => {
+    const Items = {
+      id: uuid.v4(),
+      name: this.input.current.value,
+      date: new Date().toUTCString(),
+      checked: false
+    };
+
+    if (localStorage.getItem("todos") == null) {
+      const todos = [];
+      todos.push(Items);
+      localStorage.setItem("todos", JSON.stringify(todos));
+    } else {
+      const todos = JSON.parse(localStorage.getItem("todos"));
+      todos.push(Items);
+      localStorage.setItem("todos", JSON.stringify(todos));
+    }
+    this.setState({
+      todos: JSON.parse(localStorage.getItem("todos"))
+    });
+  };
+
+  componentDidMount() {
+    const todos = window.localStorage.getItem("todos");
+    const parsedTodos = JSON.parse(todos);
+    if (todos == null) {
+      return false;
+    } else {
+      this.setState({
+        todos: parsedTodos
+      });
+      console.log(this.state.todos);
+    }
+  }
+
+  deleteItem = event => {
+    let index = event.target.getAttribute("data-key");
+    let listValue = JSON.parse(localStorage.getItem("todos"));
+    listValue.splice(index, 1);
+    this.setState({ todos: listValue });
+    localStorage.setItem("todos", JSON.stringify(listValue));
+  };
+
+  editItem = event => {
+    console.log("edit pressed!");
+  };
 
   render() {
-    return(
-      <div className={styles.container}>
-        <h1 className={styles.h1}>Todo List</h1>
+    console.log("todos", this.state.todos);
+    return (
+      <div className="container">
+        <h1>Todo List</h1>
+
+        <div>
+          <input type="text" placeholder="AddTask..." ref={this.input}></input>
+          <button onClick={this.addTask} className="button">
+            Add
+          </button>
+          <ul>
+            {this.state.todos.map((item, i) => (
+              <li key={i}>
+                {item.name}
+                <button
+                  className="edit_button"
+                 
+                  value="delete"
+                  data-key={i}
+                  onClick={this.deleteItem}
+                >
+                  Remove
+                </button>
+                <button
+                  className="edit_button"
+                 
+                  value="edit"
+                  data-key={i}
+                  onClick={this.editItem}
+                >
+                  Edit
+                </button>
+
+                <hr />
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-    )
+    );
   }
-}
-
-const styles = {
-  body: {
-    backgroundColor: "#2e89dd",
-    color: "white"
-  },
-
-  h1: {
-    fontSize: 38,
-    color: "white"
-  },
-  
-  input: {
-    width: "30%",
-    margin: 8,
-    border: "none",
-    borderRadius: 15,
-    backgroundColor: "rgb(197, 193, 193)",
-    color: "rgb(10, 10, 10)",
-  },
-  
-  button: {
-    backgroundColor: "white",
-    border: "none",
-    color: "black",
-    padding: 10,
-    textAlign: "center",
-    textDecoration: "none",
-    margin: 4,
-  
-  },
-  
-  container: {
-    backgroundColor: "#2e89dd",
-    borderStyle: "hidden",
-    borderRadius: 15,
-    padding: 18,
-    textAlign: "center"
-  },
 }
 
 export default ToDo;

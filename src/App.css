@@ -5,8 +5,7 @@
 }
 
 .App-body {
-  background-color: #2e89dd;
-  color: white;
+  background-color: white;
   min-height: 50vh;
   display: flex;
   flex-direction: column;
