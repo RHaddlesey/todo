@@ -12,9 +12,9 @@ class ToDo extends Component {
     this.state = {
       // currentEdit: "trial",
       todos: [
-      //   { name: "Eggs", checked: false },
-      //   { name: "Bread", checked: false },
-      //   { name: "Milk", checked: false }
+        //   { name: "Eggs", checked: false },
+        //   { name: "Bread", checked: false },
+        //   { name: "Milk", checked: false }
       ]
     };
   }
@@ -27,19 +27,23 @@ class ToDo extends Component {
       checked: false,
       editing: false
     };
-
-    if (localStorage.getItem("todos") == null) {
-      const todos = [];
-      todos.push(Items);
-      localStorage.setItem("todos", JSON.stringify(todos));
+    if (this.input.current.value === "") {
+      alert("You must enter some date");
+      return;
     } else {
-      const todos = JSON.parse(localStorage.getItem("todos"));
-      todos.push(Items);
-      localStorage.setItem("todos", JSON.stringify(todos));
+      if (localStorage.getItem("todos") == null) {
+        const todos = [];
+        todos.push(Items);
+        localStorage.setItem("todos", JSON.stringify(todos));
+      } else {
+        const todos = JSON.parse(localStorage.getItem("todos"));
+        todos.push(Items);
+        localStorage.setItem("todos", JSON.stringify(todos));
+      }
+      this.setState({
+        todos: JSON.parse(localStorage.getItem("todos"))
+      });
     }
-    this.setState({
-      todos: JSON.parse(localStorage.getItem("todos"))
-    });
   };
 
   componentDidMount() {
@@ -75,10 +79,12 @@ class ToDo extends Component {
       console.log("element", element);
     });
     this.setState({ todos: editValue, currentEdit: name });
-    console.log("name name name", name)
+    console.log("name name name", name);
     localStorage.setItem("todos", JSON.stringify(editValue));
   };
 
+  // when clicked, this will save the new name over the old name and reset checked and editing to false
+  // it will also hide the 'save todos' button so it will only save the edit
   saveEdit = () => {
     console.log("save the edit", this.state.currentEdit);
     let saveEditValue = JSON.parse(localStorage.getItem("todos"));
@@ -91,7 +97,7 @@ class ToDo extends Component {
       }
       console.log("element", element, this.state.currentEdit);
     });
-    this.setState({ todos: saveEditValue });
+    this.setState({ todos: saveEditValue, editing: !this.state.editing });
     localStorage.setItem("todos", JSON.stringify(saveEditValue));
   };
 
@@ -135,7 +141,12 @@ class ToDo extends Component {
                     style={{ width: "50%" }}
                     placeholder="Add"
                     value={this.state.currentEdit}
-                    onChange={(event) => this.setState({ currentEdit: event.target.value })}
+                    onChange={event =>
+                      this.setState({
+                        currentEdit: event.target.value,
+                        editing: true
+                      })
+                    }
                   ></input>
                 ) : (
                   item.name
