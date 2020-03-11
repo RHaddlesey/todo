@@ -10,7 +10,7 @@ class ToDo extends Component {
 
     this.input = React.createRef();
     this.state = {
-      // currentEdit: "trial",
+      showEmptyWarning: false,
       todos: [
         //   { name: "Eggs", checked: false },
         //   { name: "Bread", checked: false },
@@ -28,9 +28,11 @@ class ToDo extends Component {
       editing: false
     };
     if (this.input.current.value === "") {
-      alert("You must enter some date");
+      // alert("You must enter some date");
+      this.setState({showEmptyWarning : true})
       return;
     } else {
+      this.setState({showEmptyWarning : false})
       if (localStorage.getItem("todos") == null) {
         const todos = [];
         todos.push(Items);
@@ -124,7 +126,7 @@ class ToDo extends Component {
 
         <div>
           <input type="text" placeholder="Add" ref={this.input}></input>
-
+          {this.state.showEmptyWarning ? (<div className="warning">Please enter a value</div>) : (<div></div>)}
           <ul>
             {this.state.todos.map((item, i) => (
               <li
@@ -151,6 +153,7 @@ class ToDo extends Component {
                 ) : (
                   item.name
                 )}
+                
 
                 <input
                   type="checkbox"
