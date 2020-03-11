@@ -54,7 +54,7 @@ class ToDo extends Component {
   }
 
   deleteItem = event => {
-    let index = event.target.getAttribute("data-key");
+    let index = event.target.getAttribute("todo-key");
     let listValue = JSON.parse(localStorage.getItem("todos"));
     listValue.splice(index, 1);
     this.setState({ todos: listValue });
@@ -63,6 +63,8 @@ class ToDo extends Component {
 
   editItem = event => {
     console.log("edit pressed!");
+    let index = event.target.getAttribute("todo-key");
+    console.log("edit this", index);
   };
 
   render() {
@@ -72,37 +74,44 @@ class ToDo extends Component {
         <h1>Todo List</h1>
 
         <div>
-          <input type="text" placeholder="AddTask..." ref={this.input}></input>
-          <button onClick={this.addTask} className="button">
-            Add
-          </button>
+          <input type="text" placeholder="Add" ref={this.input}></input>
+
           <ul>
             {this.state.todos.map((item, i) => (
-              <li key={i}>
+              <li key={i} className="list">
                 {item.name}
                 <button
                   className="edit_button"
-                 
                   value="delete"
-                  data-key={i}
+                  todo-key={i}
+                  onClick={this.editItem}
+                >
+                  Check
+                </button>
+                <button
+                  className="edit_button"
+                  value="delete"
+                  todo-key={i}
                   onClick={this.deleteItem}
                 >
                   Remove
                 </button>
                 <button
                   className="edit_button"
-                 
                   value="edit"
-                  data-key={i}
+                  todo-key={i}
                   onClick={this.editItem}
                 >
                   Edit
                 </button>
 
-                <hr />
+                <hr style={{ marginTop: 20 }} />
               </li>
             ))}
           </ul>
+          <button onClick={this.addTask} className="button">
+            Save my Todo's
+          </button>
         </div>
       </div>
     );

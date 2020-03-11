@@ -1,15 +1,18 @@
-body{
+body {
   background-color: white;
-  
 }
-h1{
+h1 {
   font-size: 38px;
   font-family: Arial, Helvetica, sans-serif;
   color: #ffffff;
 }
+ul {
+  list-style-type: none;
+  font-family: Arial, Helvetica, sans-serif;
+}
 
-input[type=text] {
-  width: 30%;
+input[type="text"] {
+  width: 95%;
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
@@ -20,45 +23,53 @@ input[type=text] {
   text-align: center;
   text-decoration: none;
   display: inline-block;
+  font-family: Arial, Helvetica, sans-serif;
+}
 
+.list {
+  border: none;
+  color: #ffffff;
+  padding: 10px 20px;
+  text-align: left;
+  text-decoration: none;
+  font-size: 24px;
 }
 
 .edit_button {
   background-color: #ffffff;
+  border: none;
   color: #000000;
-  padding: 10px 20px;
+  padding: 12px 12px;
   text-align: center;
   text-decoration: none;
-  /* display: inline-block; */
+  display: inline-block;
+  font-size: 12px;
   margin-right: 10px;
   align-self: flex-end;
   justify-content: flex-end;
   align-content: flex-end;
   align-items: flex-end;
   float: right;
-}
-
-.hr {
-  padding-bottom: 20px;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .button {
   background-color: #ffffff;
+  border: none;
   color: #000000;
-  padding: 10px 20px;
+  padding: 15px 32px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  margin-right: 10px;
+  font-size: 16px;
 }
 
-.container{
-  width: 60%;
+.container {
+  width: 50%;
   align-self: center;
   background-color: #2e89dd;
   border-style: hidden;
-  border-radius: 15px;
-  padding:25px;
+  padding: 25px;
   margin-top: 25;
   text-align: center;
   box-shadow: 0 8px 6px -6px black;
