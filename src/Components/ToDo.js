@@ -11,6 +11,7 @@ class ToDo extends Component {
     this.input = React.createRef();
     this.state = {
       showEmptyWarning: false,
+      showDuplicateWarning: false,
       todos: [
         //   { name: "Eggs", checked: false },
         //   { name: "Bread", checked: false },
@@ -29,19 +30,43 @@ class ToDo extends Component {
     };
     if (this.input.current.value === "") {
       // alert("You must enter some date");
-      this.setState({showEmptyWarning : true})
+      this.setState({ showEmptyWarning: true });
       return;
+    }
+    var nameExists = false;
+    if (localStorage.getItem("todos") != null) {
+      const todos = JSON.parse(localStorage.getItem("todos"));
+
+      nameExists = todos.find(element => {
+        return element.name === this.input.current.value;
+      });
+      // took out the forEach here to make the code more efficient.
+      // i know i should avoid foreach but i went with it at first for ease and speed
+      // then will try to refactor if I get time
+      if (nameExists) {
+        // todos.forEach(element => {
+        //   if (this.input.current.value === element.name) {
+        // alert("You have already entered this!");
+        this.setState({ showDuplicateWarning: true });
+        nameExists = true;
+      }
+      // });
     } else {
-      this.setState({showEmptyWarning : false})
+      this.setState({ showEmptyWarning: false });
+    }
+
+    if (!nameExists) {
+      this.setState({ showDuplicateWarning: false });
       if (localStorage.getItem("todos") == null) {
         const todos = [];
         todos.push(Items);
         localStorage.setItem("todos", JSON.stringify(todos));
       } else {
-        const todos = JSON.parse(localStorage.getItem("todos"));
-        todos.push(Items);
-        localStorage.setItem("todos", JSON.stringify(todos));
+        this.setState({ showEmptyWarning: false });
       }
+      const todos = JSON.parse(localStorage.getItem("todos"));
+      todos.push(Items);
+      localStorage.setItem("todos", JSON.stringify(todos));
       this.setState({
         todos: JSON.parse(localStorage.getItem("todos"))
       });
@@ -57,7 +82,7 @@ class ToDo extends Component {
       this.setState({
         todos: parsedTodos
       });
-      console.log(this.state.todos);
+      // console.log(this.state.todos);
     }
   }
 
@@ -71,48 +96,49 @@ class ToDo extends Component {
 
   editItem = name => {
     var editing = false;
-    console.log("edit pressed!");
-    let editValue = JSON.parse(localStorage.getItem("todos"));
-    editValue.forEach(element => {
+    // console.log("edit pressed!");
+    let editTodos = JSON.parse(localStorage.getItem("todos"));
+    var element = editTodos.find(element => {
       if (element.name === name) {
-        console.log("found");
         element.editing = !element.editing;
+        return element;
+      } else {
+        return;
       }
-      console.log("element", element);
     });
-    this.setState({ todos: editValue, currentEdit: name });
-    console.log("name name name", name);
-    localStorage.setItem("todos", JSON.stringify(editValue));
+    this.setState({ todos: editTodos, currentEdit: name });
+    // console.log("name name name", name);
+    localStorage.setItem("todos", JSON.stringify(editTodos));
   };
 
   // when clicked, this will save the new name over the old name and reset checked and editing to false
   // it will also hide the 'save todos' button so it will only save the edit
   saveEdit = () => {
-    console.log("save the edit", this.state.currentEdit);
+    // console.log("save the edit", this.state.currentEdit);
     let saveEditValue = JSON.parse(localStorage.getItem("todos"));
     saveEditValue.forEach(element => {
       if (element.editing === true) {
-        console.log("found");
+        // console.log("found");
         element.name = this.state.currentEdit;
         element.checked = false;
         element.editing = false;
       }
-      console.log("element", element, this.state.currentEdit);
+      // console.log("element", element, this.state.currentEdit);
     });
     this.setState({ todos: saveEditValue, editing: !this.state.editing });
     localStorage.setItem("todos", JSON.stringify(saveEditValue));
   };
 
   checkItem = name => {
-    console.log("check pressed!", name);
+    // console.log("check pressed!", name);
     // let index = event.target.getAttribute("todo-key");
     let checkValue = JSON.parse(localStorage.getItem("todos"));
     checkValue.forEach(element => {
       if (element.name === name) {
-        console.log("found");
+        // console.log("found");
         element.checked = !element.checked;
       }
-      console.log("element", element);
+      // console.log("element", element);
     });
     this.setState({ todos: checkValue });
     localStorage.setItem("todos", JSON.stringify(checkValue));
@@ -125,8 +151,36 @@ class ToDo extends Component {
         <h1>Todo List</h1>
 
         <div>
-          <input type="text" placeholder="Add" ref={this.input}></input>
-          {this.state.showEmptyWarning ? (<div className="warning">Please enter a value</div>) : (<div></div>)}
+          {/* added event.key here to allow either mouse click on button
+        or by pressing 'eneter' */}
+          <input
+            type="text"
+            placeholder="Add"
+            ref={this.input}
+            onKeyPress={event => {
+              if (event.key === "Enter") {
+                this.addTask();
+              }
+            }}
+          ></input>
+          {this.state.showEmptyWarning ? (
+            <div className="warning">Please enter a value.</div>
+          ) : (
+            <div></div>
+          )}
+          {this.state.showDuplicateWarning ? (
+            <div>
+              <button
+                className="warning_button"
+                value="warning"
+                onClick={() => this.setState({ showDuplicateWarning: false })}
+              >
+                You have already entered this 'Todo'. Click to clear warning!
+              </button>
+            </div>
+          ) : (
+            <div></div>
+          )}
           <ul>
             {this.state.todos.map((item, i) => (
               <li
@@ -153,7 +207,6 @@ class ToDo extends Component {
                 ) : (
                   item.name
                 )}
-                
 
                 <input
                   type="checkbox"
