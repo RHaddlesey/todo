@@ -10,10 +10,11 @@ class ToDo extends Component {
 
     this.input = React.createRef();
     this.state = {
+      // currentEdit: "trial",
       todos: [
-        { name: "Eggs", checked: false },
-        { name: "Bread", checked: false },
-        { name: "Milk", checked: false }
+      //   { name: "Eggs", checked: false },
+      //   { name: "Bread", checked: false },
+      //   { name: "Milk", checked: false }
       ]
     };
   }
@@ -62,29 +63,55 @@ class ToDo extends Component {
     localStorage.setItem("todos", JSON.stringify(listValue));
   };
 
-  editItem = event => {
+  editItem = name => {
+    var editing = false;
     console.log("edit pressed!");
-    let index = event.target.getAttribute("todo-key");
-    console.log("edit this", index);
+    let editValue = JSON.parse(localStorage.getItem("todos"));
+    editValue.forEach(element => {
+      if (element.name === name) {
+        console.log("found");
+        element.editing = !element.editing;
+      }
+      console.log("element", element);
+    });
+    this.setState({ todos: editValue, currentEdit: name });
+    console.log("name name name", name)
+    localStorage.setItem("todos", JSON.stringify(editValue));
   };
 
-  checkItem = (name) => {
+  saveEdit = () => {
+    console.log("save the edit", this.state.currentEdit);
+    let saveEditValue = JSON.parse(localStorage.getItem("todos"));
+    saveEditValue.forEach(element => {
+      if (element.editing === true) {
+        console.log("found");
+        element.name = this.state.currentEdit;
+        element.checked = false;
+        element.editing = false;
+      }
+      console.log("element", element, this.state.currentEdit);
+    });
+    this.setState({ todos: saveEditValue });
+    localStorage.setItem("todos", JSON.stringify(saveEditValue));
+  };
+
+  checkItem = name => {
     console.log("check pressed!", name);
     // let index = event.target.getAttribute("todo-key");
     let checkValue = JSON.parse(localStorage.getItem("todos"));
     checkValue.forEach(element => {
-      if( element.name === name) {
-        console.log("found")
-        element.checked = !element.checked
+      if (element.name === name) {
+        console.log("found");
+        element.checked = !element.checked;
       }
-      console.log("element", element)
+      console.log("element", element);
     });
     this.setState({ todos: checkValue });
     localStorage.setItem("todos", JSON.stringify(checkValue));
   };
 
   render() {
-    console.log("todos", this.state.todos);
+    // console.log("todos", this.state.todos);
     return (
       <div className="container">
         <h1>Todo List</h1>
@@ -94,18 +121,36 @@ class ToDo extends Component {
 
           <ul>
             {this.state.todos.map((item, i) => (
-              <li key={i} className="list" style={{ textDecorationLine: item.checked ? "line-through" : "none", color: item.checked ? "black" : "white"}}>
-                {item.name}
-                {item.checked}
+              <li
+                key={i}
+                className="list"
+                style={{
+                  textDecorationLine: item.checked ? "line-through" : "none",
+                  color: item.checked ? "black" : "white"
+                }}
+              >
+                {item.editing ? (
+                  <input
+                    type="text"
+                    style={{ width: "50%" }}
+                    placeholder="Add"
+                    value={this.state.currentEdit}
+                    onChange={(event) => this.setState({ currentEdit: event.target.value })}
+                  ></input>
+                ) : (
+                  item.name
+                )}
+
                 <input
                   type="checkbox"
                   todo-key={i}
                   value="check"
                   checked={item.checked}
+                  onChange={() => this.checkItem(item.name)}
                   className="check_button"
-                  onClick={() => this.checkItem(item.name)}
+                  // onClick={}
                 />
-{console.log("item", item)}
+
                 <button
                   className="edit_button"
                   value="delete"
@@ -114,22 +159,37 @@ class ToDo extends Component {
                 >
                   Remove
                 </button>
-                <button
-                  className="edit_button"
-                  value="edit"
-                  todo-key={i}
-                  onClick={this.editItem}
-                >
-                  Edit
-                </button>
+                {item.editing === true ? (
+                  <button
+                    className="edit_button"
+                    value="edit"
+                    todo-key={i}
+                    onClick={() => this.saveEdit(item.name)}
+                  >
+                    Save
+                  </button>
+                ) : (
+                  <button
+                    className="edit_button"
+                    value="edit"
+                    todo-key={i}
+                    onClick={() => this.editItem(item.name)}
+                  >
+                    Edit
+                  </button>
+                )}
 
                 <hr style={{ marginTop: 20 }} />
               </li>
             ))}
           </ul>
-          <button onClick={this.addTask} className="button">
-            Save my Todo's
-          </button>
+          {this.state.editing !== true ? (
+            <button onClick={this.addTask} className="button">
+              Save my Todo's
+            </button>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     );
