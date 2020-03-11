@@ -23,7 +23,8 @@ class ToDo extends Component {
       id: uuid.v4(),
       name: this.input.current.value,
       date: new Date().toUTCString(),
-      checked: false
+      checked: false,
+      editing: false
     };
 
     if (localStorage.getItem("todos") == null) {
@@ -67,6 +68,21 @@ class ToDo extends Component {
     console.log("edit this", index);
   };
 
+  checkItem = (name) => {
+    console.log("check pressed!", name);
+    // let index = event.target.getAttribute("todo-key");
+    let checkValue = JSON.parse(localStorage.getItem("todos"));
+    checkValue.forEach(element => {
+      if( element.name === name) {
+        console.log("found")
+        element.checked = !element.checked
+      }
+      console.log("element", element)
+    });
+    this.setState({ todos: checkValue });
+    localStorage.setItem("todos", JSON.stringify(checkValue));
+  };
+
   render() {
     console.log("todos", this.state.todos);
     return (
@@ -78,16 +94,18 @@ class ToDo extends Component {
 
           <ul>
             {this.state.todos.map((item, i) => (
-              <li key={i} className="list">
+              <li key={i} className="list" style={{ textDecorationLine: item.checked ? "line-through" : "none", color: item.checked ? "black" : "white"}}>
                 {item.name}
-                <button
-                  className="edit_button"
-                  value="delete"
+                {item.checked}
+                <input
+                  type="checkbox"
                   todo-key={i}
-                  onClick={this.editItem}
-                >
-                  Check
-                </button>
+                  value="check"
+                  checked={item.checked}
+                  className="check_button"
+                  onClick={() => this.checkItem(item.name)}
+                />
+{console.log("item", item)}
                 <button
                   className="edit_button"
                   value="delete"
