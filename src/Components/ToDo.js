@@ -1,7 +1,6 @@
 // R Haddlesey
 
 import React, { Component } from "react";
-import uuid from "uuid";
 import "./ToDo.css";
 
 class ToDo extends Component {
@@ -22,14 +21,12 @@ class ToDo extends Component {
 
   addTask = () => {
     const Items = {
-      id: uuid.v4(),
       name: this.input.current.value,
       date: new Date().toUTCString(),
       checked: false,
       editing: false
     };
     if (this.input.current.value === "") {
-      // alert("You must enter some date");
       this.setState({ showEmptyWarning: true });
       return;
     }
@@ -38,19 +35,14 @@ class ToDo extends Component {
       const todos = JSON.parse(localStorage.getItem("todos"));
 
       nameExists = todos.find(element => {
-        return element.name === this.input.current.value;
+        return (
+          element.name.toLowerCase() === this.input.current.value.toLowerCase()
+        );
       });
-      // took out the forEach here to make the code more efficient.
-      // i know i should avoid foreach but i went with it at first for ease and speed
-      // then will try to refactor if I get time
       if (nameExists) {
-        // todos.forEach(element => {
-        //   if (this.input.current.value === element.name) {
-        // alert("You have already entered this!");
         this.setState({ showDuplicateWarning: true });
         nameExists = true;
       }
-      // });
     } else {
       this.setState({ showEmptyWarning: false });
     }
@@ -59,7 +51,6 @@ class ToDo extends Component {
       this.setState({ showDuplicateWarning: false });
       if (localStorage.getItem("todos") == null) {
         const todos = [];
-        todos.push(Items);
         localStorage.setItem("todos", JSON.stringify(todos));
       } else {
         this.setState({ showEmptyWarning: false });
@@ -152,7 +143,7 @@ class ToDo extends Component {
 
         <div>
           {/* added event.key here to allow either mouse click on button
-        or by pressing 'eneter' */}
+        or by pressing 'enter' */}
           <input
             type="text"
             placeholder="Add"
@@ -186,6 +177,7 @@ class ToDo extends Component {
               <li
                 key={i}
                 className="list"
+                // if you check the box the the todo gets a line through
                 style={{
                   textDecorationLine: item.checked ? "line-through" : "none",
                   color: item.checked ? "black" : "white"
@@ -194,8 +186,8 @@ class ToDo extends Component {
                 {item.editing ? (
                   <input
                     type="text"
-                    style={{ width: "50%" }}
-                    placeholder="Add"
+                    style={{ width: "50%", marginTop: 0 }}
+                    placeholder="Edit"
                     value={this.state.currentEdit}
                     onChange={event =>
                       this.setState({
@@ -210,6 +202,7 @@ class ToDo extends Component {
 
                 <input
                   type="checkbox"
+                  style={{ margin: 0}}
                   todo-key={i}
                   value="check"
                   checked={item.checked}
@@ -246,7 +239,7 @@ class ToDo extends Component {
                   </button>
                 )}
 
-                <hr style={{ marginTop: 20 }} />
+                <hr style={{ marginTop: 20, color: "#ffffff" }} />
               </li>
             ))}
           </ul>
@@ -255,7 +248,7 @@ class ToDo extends Component {
               Save my Todo's
             </button>
           ) : (
-            ""
+            <React.Fragment></React.Fragment>
           )}
         </div>
       </div>
